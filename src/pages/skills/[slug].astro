@@ -1,28 +1,36 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import StageProgress from '../../components/StageProgress.astro';
+import { getOrderedStages } from '../../lib/stages';
 
 export async function getStaticPaths() {
   const skills = await getCollection('skills');
+  const stages = getOrderedStages(skills.sort((a, b) => a.data.order - b.data.order));
   return skills.map((skill) => ({
     params: { slug: skill.slug },
-    props: { skill },
+    props: { skill, stages },
   }));
 }
 
-const { skill } = Astro.props;
+const { skill, stages } = Astro.props;
 const { Content } = await skill.render();
 ---
 
 <BaseLayout title={skill.data.title} description={skill.data.summary}>
-  <p><a href="/skills">← All skills</a></p>
-  <h1>{skill.data.title}</h1>
-  <p><em>{skill.data.stage}</em></p>
-  <p>{skill.data.summary}</p>
+  <a class="back-link" href="/skills">← All skills</a>
+
+  <StageProgress stages={stages} current={skill.data.stage} />
+
+  <div class="skill-head">
+    <p class="eyebrow">No. {String(skill.data.order).padStart(2, '0')} · {skill.data.stage}</p>
+    <h1>{skill.data.title}</h1>
+    <p class="summary">{skill.data.summary}</p>
+  </div>
 
   {
     skill.data.video && (
-      <div class="video">
+      <div class="video-frame">
         <iframe
           src={skill.data.video}
           title={`${skill.data.title} walkthrough`}
@@ -33,5 +41,37 @@ const { Content } = await skill.render();
     )
   }
 
-  <Content />
+  <div class="skill-body">
+    <Content />
+  </div>
+
+  <style>
+    .skill-head {
+      margin: 2rem 0 1.5rem;
+    }
+
+    .summary {
+      font-size: 1.05rem;
+    }
+
+    .video-frame {
+      background: var(--linen);
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .video-frame iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      display: block;
+      border-radius: 2px;
+    }
+
+    .skill-body {
+      border-top: 1px solid var(--linen);
+      padding-top: 1.5rem;
+    }
+  </style>
 </BaseLayout>

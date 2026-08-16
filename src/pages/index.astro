@@ -1,28 +1,77 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StageProgress from '../components/StageProgress.astro';
+import { getOrderedStages } from '../lib/stages';
 
 const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order);
+const stages = getOrderedStages(skills);
 ---
 
 <BaseLayout
   title="Home"
-  description="Claude Agent Skills encoding the HostPapa PMO's project-management methodology."
+  description="A practical system for running projects with an AI co-pilot, from intake through cadence."
 >
-  <h1>PMO Agent Skills</h1>
+  <p class="eyebrow">{skills.length} skills · {stages.length} stages</p>
+  <h1>A practical system for running projects with an AI co-pilot.</h1>
   <p>
-    Claude Agent Skills encoding the HostPapa PMO's project-management methodology — from
-    project intake through planning, scheduling, meeting recaps, and Notion/Slack sync.
+    Each skill takes what actually happens in a meeting — a kickoff call, a 1:1, a planning
+    session, a Slack sync — and turns it into a structured, repeatable record.
   </p>
 
+  <div class="hero-stages">
+    <StageProgress stages={stages} />
+  </div>
+
   <h2>The sequence</h2>
-  <ol>
+  <ol class="sequence-list">
     {
       skills.map((skill) => (
         <li>
-          <a href={`/skills/${skill.slug}`}>{skill.data.title}</a> — {skill.data.stage}
+          <a href={`/skills/${skill.slug}`}>{skill.data.title}</a>
+          <span class="sequence-stage">{skill.data.stage}</span>
         </li>
       ))
     }
   </ol>
+
+  <style>
+    .hero-stages {
+      margin: 2.5rem 0 3rem;
+    }
+
+    .sequence-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-top: 1px solid var(--linen);
+    }
+
+    .sequence-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--linen);
+    }
+
+    .sequence-list a {
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .sequence-list a:hover {
+      text-decoration: underline;
+    }
+
+    .sequence-stage {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--moss);
+      white-space: nowrap;
+    }
+  </style>
 </BaseLayout>
