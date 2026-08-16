@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order);
+const stages = [...new Set(skills.map((s) => s.data.stage))];
+---
+
+<BaseLayout title="Skills" description="All PMO agent skills, grouped by stage.">
+  <h1>Skills</h1>
+  {
+    stages.map((stage) => (
+      <section>
+        <h2>{stage}</h2>
+        <ul>
+          {skills
+            .filter((s) => s.data.stage === stage)
+            .map((skill) => (
+              <li>
+                <a href={`/skills/${skill.slug}`}>{skill.data.title}</a>
+                <p>{skill.data.summary}</p>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>

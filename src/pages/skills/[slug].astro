@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const skills = await getCollection('skills');
+  return skills.map((skill) => ({
+    params: { slug: skill.slug },
+    props: { skill },
+  }));
+}
+
+const { skill } = Astro.props;
+const { Content } = await skill.render();
+---
+
+<BaseLayout title={skill.data.title} description={skill.data.summary}>
+  <p><a href="/skills">← All skills</a></p>
+  <h1>{skill.data.title}</h1>
+  <p><em>{skill.data.stage}</em></p>
+  <p>{skill.data.summary}</p>
+
+  {
+    skill.data.video && (
+      <div class="video">
+        <iframe
+          src={skill.data.video}
+          title={`${skill.data.title} walkthrough`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        />
+      </div>
+    )
+  }
+
+  <Content />
+</BaseLayout>

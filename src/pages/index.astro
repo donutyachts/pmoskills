@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Home"
+  description="Claude Agent Skills encoding the HostPapa PMO's project-management methodology."
+>
+  <h1>PMO Agent Skills</h1>
+  <p>
+    Claude Agent Skills encoding the HostPapa PMO's project-management methodology — from
+    project intake through planning, scheduling, meeting recaps, and Notion/Slack sync.
+  </p>
+
+  <h2>The sequence</h2>
+  <ol>
+    {
+      skills.map((skill) => (
+        <li>
+          <a href={`/skills/${skill.slug}`}>{skill.data.title}</a> — {skill.data.stage}
+        </li>
+      ))
+    }
+  </ol>
+</BaseLayout>
