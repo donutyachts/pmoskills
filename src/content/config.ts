@@ -9,6 +9,7 @@ const skills = defineCollection({
     summary: z.string(),
     video: z.string().url().optional(),
     sourceFile: z.string(),
+    related: z.array(z.string()).default([]),
   }),
 });
 

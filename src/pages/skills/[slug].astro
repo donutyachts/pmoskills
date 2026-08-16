@@ -9,12 +9,16 @@ export async function getStaticPaths() {
   const stages = getOrderedStages(skills.sort((a, b) => a.data.order - b.data.order));
   return skills.map((skill) => ({
     params: { slug: skill.slug },
-    props: { skill, stages },
+    props: { skill, stages, allSkills: skills },
   }));
 }
 
-const { skill, stages } = Astro.props;
+const { skill, stages, allSkills } = Astro.props;
 const { Content } = await skill.render();
+
+const relatedSkills = skill.data.related
+  .map((slug) => allSkills.find((s) => s.slug === slug))
+  .filter(Boolean);
 ---
 
 <BaseLayout title={skill.data.title} description={skill.data.summary}>
@@ -45,6 +49,21 @@ const { Content } = await skill.render();
     <Content />
   </div>
 
+  {
+    relatedSkills.length > 0 && (
+      <div class="related-skills">
+        <p class="eyebrow">Related skills</p>
+        <ul>
+          {relatedSkills.map((related) => (
+            <li>
+              <a href={`/skills/${related.slug}`}>{related.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
   <style>
     .skill-head {
       margin: 2rem 0 1.5rem;
@@ -72,6 +91,22 @@ const { Content } = await skill.render();
     .skill-body {
       border-top: 1px solid var(--linen);
       padding-top: 1.5rem;
+    }
+
+    .related-skills {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--linen);
+    }
+
+    .related-skills ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .related-skills li {
+      margin-bottom: 0.4rem;
     }
   </style>
 </BaseLayout>
