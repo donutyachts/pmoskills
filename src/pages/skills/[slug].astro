@@ -7,6 +7,7 @@ import StageProgress from '../../components/StageProgress.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatStage, getOrderedStages } from '../../lib/stages';
 import { readingLabel } from '../../lib/reading';
+import { getLastUpdatedDate } from '../../lib/lastUpdated';
 
 const REPO_URL = 'https://github.com/donutyachts/pmoskills';
 
@@ -32,6 +33,16 @@ const nextSkill =
   currentPosition < allSkills.length - 1 ? allSkills[currentPosition + 1] : undefined;
 
 const sourceUrl = `${REPO_URL}/blob/main/${skill.data.sourceFile}`;
+
+const lastUpdated = getLastUpdatedDate([
+  skill.data.sourceFile,
+  `src/content/skills/${skill.data.sourceFile}`,
+]);
+const lastUpdatedLabel = lastUpdated
+  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(
+      lastUpdated
+    )
+  : null;
 ---
 
 <BaseLayout title={skill.data.title} description={skill.data.summary}>
@@ -43,6 +54,9 @@ const sourceUrl = `${REPO_URL}/blob/main/${skill.data.sourceFile}`;
           <span class="meta-accent">{formatStage(skill.data.stage, stages)}</span>
           <span>No. {String(skill.data.order).padStart(2, '0')} of {allSkills.length}</span>
           <span>{readingLabel(skill.body)}</span>
+          {lastUpdated && (
+            <time datetime={lastUpdated.toISOString()}>Updated {lastUpdatedLabel}</time>
+          )}
         </p>
 
         <h1 class="article-title">{skill.data.title}</h1>
@@ -57,6 +71,14 @@ const sourceUrl = `${REPO_URL}/blob/main/${skill.data.sourceFile}`;
           <a href={sourceUrl} target="_blank" rel="noreferrer" class="link-sweep text-sm">
             {skill.data.sourceFile}
           </a>
+          {lastUpdatedLabel && (
+            <>
+              <span class="text-sm text-muted-foreground" aria-hidden="true">
+                &middot;
+              </span>
+              <span class="text-sm text-muted-foreground">Last updated {lastUpdatedLabel}</span>
+            </>
+          )}
         </div>
       </header>
 
