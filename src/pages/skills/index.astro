@@ -1,96 +1,47 @@
 ---
 import { getCollection } from 'astro:content';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SkillCard from '../../components/SkillCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getOrderedStages } from '../../lib/stages';
+import { formatStage, getOrderedStages } from '../../lib/stages';
 
 const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order);
 const stages = getOrderedStages(skills);
+const slugify = (s: string) => s.toLowerCase().replace(/\s+/g, '-');
 ---
 
 <BaseLayout title="Skills" description="All skills, grouped by stage.">
-  <h1>Skills</h1>
-  <p>Grouped by the stage of a project they belong to, in the order they're typically used.</p>
+  <SiteHeader />
+  <main id="content" class="outer">
+    <div class="inner">
+      <header class="canvas pagehead">
+        <p class="eyebrow">{skills.length} skills · {stages.length} stages</p>
+        <h1 class="pagehead-title">Skills</h1>
+        <p class="pagehead-description">
+          Grouped by the stage of a project they belong to, in the order they're typically used.
+        </p>
+      </header>
 
-  {
-    stages.map((stage) => (
-      <section class="stage-group">
-        <h2>{stage}</h2>
-        <ul class="skill-list">
-          {skills
-            .filter((s) => s.data.stage === stage)
-            .map((skill) => (
-              <li>
-                <a href={`/skills/${skill.slug}`}>
-                  <span class="skill-number">
-                    {String(skill.data.order).padStart(2, '0')}
-                  </span>
-                  <span class="skill-body">
-                    <span class="skill-title">{skill.data.title}</span>
-                    <span class="skill-summary">{skill.data.summary}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-        </ul>
-      </section>
-    ))
-  }
-
-  <style>
-    .stage-group {
-      margin-top: 2.5rem;
-    }
-
-    .stage-group h2 {
-      color: var(--moss);
-      border-bottom: 1px solid var(--linen);
-      padding-bottom: 0.5rem;
-    }
-
-    .skill-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .skill-list li + li {
-      border-top: 1px solid var(--linen);
-    }
-
-    .skill-list a {
-      display: flex;
-      gap: 1rem;
-      padding: 0.85rem 0;
-      text-decoration: none;
-      color: var(--ink);
-    }
-
-    .skill-number {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--ochre);
-      padding-top: 0.15rem;
-      flex-shrink: 0;
-    }
-
-    .skill-body {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .skill-title {
-      font-weight: 500;
-    }
-
-    .skill-list a:hover .skill-title {
-      text-decoration: underline;
-    }
-
-    .skill-summary {
-      font-size: 0.9rem;
-      opacity: 0.75;
-      max-width: 60ch;
-    }
-  </style>
+      <div class="canvas grid gap-[var(--space-section)] pb-[var(--space-section)]">
+        {
+          stages.map((stage) => (
+            <section aria-labelledby={slugify(stage)}>
+              <h2 id={slugify(stage)} class="section-title">
+                {formatStage(stage, stages)}
+              </h2>
+              <div class="feed">
+                {skills
+                  .filter((s) => s.data.stage === stage)
+                  .map((skill) => (
+                    <SkillCard skill={skill} variant="compact" headingLevel="h3" stages={stages} />
+                  ))}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+  <SiteFooter />
 </BaseLayout>

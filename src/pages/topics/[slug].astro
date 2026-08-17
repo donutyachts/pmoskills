@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -15,7 +17,15 @@ const { Content } = await topic.render();
 ---
 
 <BaseLayout title={topic.data.title} description={topic.data.summary}>
-  <h1>{topic.data.title}</h1>
-  <p>{topic.data.summary}</p>
-  <Content />
+  <SiteHeader />
+  <main id="content" class="outer">
+    <div class="canvas pagehead">
+      <h1 class="pagehead-title">{topic.data.title}</h1>
+      <p class="pagehead-description">{topic.data.summary}</p>
+    </div>
+    <div class="prose canvas pb-[var(--space-section)]">
+      <Content />
+    </div>
+  </main>
+  <SiteFooter />
 </BaseLayout>

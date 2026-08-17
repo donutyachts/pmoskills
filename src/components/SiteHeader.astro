@@ -1,0 +1,98 @@
+---
+import { navigation, siteConfig } from '../config/site';
+
+const currentPath = Astro.url.pathname;
+const isCurrentPath = (href: string) =>
+  currentPath === href || (href !== '/' && currentPath.startsWith(href));
+---
+
+<header class="site-header outer">
+  <div class="inner flex items-center justify-between gap-6 py-2.5">
+    <a href="/" class="wordmark">{siteConfig.name}</a>
+
+    <div class="flex items-center gap-5">
+      <nav class="flex items-center gap-6" aria-label="Primary navigation">
+        {
+          navigation.map((item) => (
+            <a
+              href={item.href}
+              class="nav-link"
+              aria-current={isCurrentPath(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <button
+        type="button"
+        class="theme-switch"
+        role="switch"
+        aria-checked="false"
+        data-theme-toggle
+        aria-label="Switch to dark mode"
+      >
+        <span class="theme-switch__knob" aria-hidden="true">
+          <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 4V2M12 22v-2M4 12H2M22 12h-2M5 5 3.5 3.5M20.5 20.5 19 19M19 5l1.5-1.5M3.5 20.5 5 19"
+              stroke="currentColor"
+              stroke-width="2.25"
+              stroke-linecap="round"
+            />
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2.25" />
+          </svg>
+          <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 14.2A7.4 7.4 0 0 1 9.8 4a8.6 8.6 0 1 0 10.2 10.2Z"
+              stroke="currentColor"
+              stroke-width="2.25"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+
+    const revealThreshold = 6;
+    let ticking = false;
+    let lastY = window.scrollY;
+
+    const updateHeader = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+
+      header.classList.toggle('is-scrolled', y > 8);
+
+      if (y <= 8) {
+        header.classList.remove('is-hidden');
+      } else if (delta > revealThreshold) {
+        header.classList.add('is-hidden');
+      } else if (delta < -revealThreshold) {
+        header.classList.remove('is-hidden');
+      }
+
+      if (Math.abs(delta) > revealThreshold) lastY = y;
+      ticking = false;
+    };
+
+    updateHeader();
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(updateHeader);
+      },
+      { passive: true }
+    );
+  })();
+</script>

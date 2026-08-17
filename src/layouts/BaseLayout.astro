@@ -1,41 +1,84 @@
 ---
 import '../styles/global.css';
+import { siteConfig } from '../config/site';
 
 interface Props {
-  title: string;
+  title?: string;
   description?: string;
 }
 
-const { title, description } = Astro.props;
+const { title = siteConfig.name, description = siteConfig.description } = Astro.props;
+const pageTitle = title === siteConfig.name ? title : `${title} · ${siteConfig.name}`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} · PMO Agent Skills</title>
-    {description && <meta name="description" content={description} />}
+    <link rel="preload" href="/fonts/geist/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <script is:inline>
+      (() => {
+        const storageKey = 'pmo-skills-theme';
+        const root = document.documentElement;
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        let storedTheme;
+
+        try {
+          storedTheme = localStorage.getItem(storageKey);
+        } catch {
+          storedTheme = null;
+        }
+
+        const updateToggles = (theme) => {
+          const isDark = theme === 'dark';
+          document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.setAttribute('aria-checked', String(isDark));
+            button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+          });
+        };
+
+        const setTheme = (theme, persist = false) => {
+          root.dataset.theme = theme;
+          if (persist) {
+            storedTheme = theme;
+            try {
+              localStorage.setItem(storageKey, theme);
+            } catch {}
+          }
+          updateToggles(theme);
+        };
+
+        const preferredTheme =
+          storedTheme === 'light' || storedTheme === 'dark'
+            ? storedTheme
+            : systemDark.matches
+              ? 'dark'
+              : 'light';
+
+        setTheme(preferredTheme);
+
+        systemDark.addEventListener('change', (event) => {
+          if (storedTheme === 'light' || storedTheme === 'dark') return;
+          setTheme(event.matches ? 'dark' : 'light');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+          updateToggles(root.dataset.theme || preferredTheme);
+          document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.addEventListener('click', () => {
+              setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
+            });
+          });
+        });
+      })();
+    </script>
   </head>
   <body>
-    <header class="site-header">
-      <nav class="site-nav">
-        <a href="/">PMO Agent Skills</a>
-        <a href="/skills">Skills</a>
-      </nav>
-    </header>
-    <main class="site-main">
-      <slot />
-    </main>
-    <footer class="site-footer">
-      <p>HostPapa PMO</p>
-    </footer>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <slot />
   </body>
 </html>

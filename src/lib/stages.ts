@@ -9,3 +9,8 @@ export function getOrderedStages(skills: CollectionEntry<'skills'>[]): string[] 
   }
   return stages;
 }
+
+export function formatStage(stage: string, orderedStages: string[]): string {
+  const number = String(orderedStages.indexOf(stage) + 1).padStart(2, '0');
+  return `${number} ${stage}`;
+}

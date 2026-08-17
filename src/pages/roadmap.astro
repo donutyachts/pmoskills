@@ -1,0 +1,25 @@
+---
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Roadmap" description="All the stuff coming soon.">
+  <SiteHeader />
+  <main id="content" class="outer">
+    <div class="canvas pagehead">
+      <h1 class="pagehead-title">Skills roadmap</h1>
+      <p class="pagehead-description">All the stuff coming soon.</p>
+    </div>
+    <div class="prose canvas pb-[var(--space-section)]">
+      <ol>
+        <li>Walkthrough videos showing the skills in action</li>
+        <li>The Notion Project Workbook template used by the skills</li>
+        <li>Evaluations, or "evals," to check quality of the outputs</li>
+        <li>Skills for project telemetry</li>
+        <li>Skills for project closure</li>
+      </ol>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
