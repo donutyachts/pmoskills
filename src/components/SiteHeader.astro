@@ -1,5 +1,6 @@
 ---
 import { navigation, siteConfig } from '../config/site';
+import TipLink from './TipLink.astro';
 
 const currentPath = Astro.url.pathname;
 const isCurrentPath = (href: string) =>
@@ -24,6 +25,8 @@ const isCurrentPath = (href: string) =>
           ))
         }
       </nav>
+
+      <TipLink />
 
       <button
         type="button"

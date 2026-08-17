@@ -1,5 +1,6 @@
 ---
 import { navigation, siteConfig } from '../config/site';
+import TipLink from './TipLink.astro';
 
 const currentYear = new Date().getFullYear();
 ---
@@ -11,6 +12,9 @@ const currentYear = new Date().getFullYear();
     <div>
       <a href="/" class="wordmark">{siteConfig.name}</a>
       <p class="mt-2 text-xs text-muted-foreground">&copy; {currentYear}. All rights reserved.</p>
+      <p class="mt-1 text-xs text-muted-foreground">
+        Made in Toronto <span role="img" aria-label="Canadian flag">🇨🇦</span>
+      </p>
     </div>
 
     <nav aria-label="Footer navigation" class="md:justify-self-end">
@@ -25,6 +29,10 @@ const currentYear = new Date().getFullYear();
             </li>
           ))
         }
+        <li class="flex items-center gap-4">
+          <span class="footer-dot" aria-hidden="true" />
+          <TipLink />
+        </li>
       </ul>
     </nav>
   </div>

@@ -403,6 +403,60 @@
     color: var(--accent);
   }
 
+  .tip-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: var(--accent);
+    border-radius: var(--radius-full);
+    transition:
+      border-color var(--duration) var(--ease-out),
+      background-color var(--duration) var(--ease-out),
+      color var(--duration) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  .tip-link:hover,
+  .tip-link:focus-visible {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent-strong);
+    transform: translateY(-1px);
+  }
+
+  .tip-link__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    animation: tip-link-beat 2.4s var(--ease-out) infinite;
+  }
+
+  @keyframes tip-link-beat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    15% {
+      transform: scale(1.18);
+    }
+    30% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.12);
+    }
+    60% {
+      transform: scale(1);
+    }
+  }
+
   .icon-btn {
     display: inline-grid;
     width: 2.25rem;

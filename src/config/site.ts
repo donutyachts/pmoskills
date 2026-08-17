@@ -12,3 +12,8 @@ export const navigation = [
   { label: 'Skills', href: '/skills/' },
   { label: 'Roadmap', href: '/roadmap/' },
 ];
+
+export const tipLink = {
+  label: 'Tip',
+  href: 'https://donate.stripe.com/fZu8wQ5DSgVQ5QU3xs93y01',
+};

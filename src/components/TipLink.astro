@@ -1,0 +1,29 @@
+---
+import { tipLink } from '../config/site';
+
+interface Props {
+  class?: string;
+}
+
+const { class: extraClass } = Astro.props;
+---
+
+<a
+  href={tipLink.href}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={`${tipLink.label} — support this site`}
+  class:list={['tip-link', extraClass]}
+>
+  <svg class="tip-link__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M12 20.2s-7-4.35-9.5-8.9C.9 8.1 2.4 4.6 5.8 4.1c2-.3 3.8.7 4.9 2.3l1.3 1.9 1.3-1.9c1.1-1.6 2.9-2.6 4.9-2.3 3.4.5 4.9 4 3.3 7.2-2.5 4.55-9.5 8.9-9.5 8.9Z"
+      fill="#e0263c"
+      stroke="#e0263c"
+      stroke-width="1.75"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+  </svg>
+  <span>{tipLink.label}</span>
+</a>
