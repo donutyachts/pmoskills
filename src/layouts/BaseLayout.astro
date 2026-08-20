@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
-import { siteConfig } from '../config/site';
+import ComingSoon from '../components/ComingSoon.astro';
+import { comingSoon, siteConfig } from '../config/site';
 
 interface Props {
   title?: string;
@@ -92,7 +93,17 @@ const pageTitle = title === siteConfig.name ? title : `${title} · ${siteConfig.
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
-    <slot />
+    {
+      comingSoon ? (
+        <ComingSoon />
+      ) : (
+        <>
+          <a class="skip-link" href="#content">
+            Skip to content
+          </a>
+          <slot />
+        </>
+      )
+    }
   </body>
 </html>

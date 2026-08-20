@@ -1,3 +1,5 @@
+export const comingSoon = true;
+
 export const siteConfig = {
   name: 'PMO Skills',
   tagline: 'AI agent skills for new-gen PMOs using Notion and Slack',
