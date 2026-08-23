@@ -7,6 +7,7 @@ sourceFile: pmo-slack-notion-sync.md
 related:
   - pmo-meeting-recap
   - pmo-step-schedule
+  - pmo-link-harvest
 ---
 
 ## When it triggers

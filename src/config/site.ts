@@ -1,4 +1,4 @@
-export const comingSoon = true;
+export const comingSoon = false;
 
 export const siteConfig = {
   name: 'PMO Skills',
@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     'Claude Agent Skills encoding a PMO project-management methodology, from intake through cadence.',
   about:
-    'Nine skills covering a project from intake through cadence for new-gen PMOs using Notion and Slack. Each one takes what actually happens in a meeting and turns it into a structured, repeatable record.',
+    'Ten skills covering a project from intake through cadence for new-gen PMOs using Notion and Slack. Each one takes what actually happens in a meeting and turns it into a structured, repeatable record.',
 };
 
 export const navigation = [
