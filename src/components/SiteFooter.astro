@@ -1,48 +1,32 @@
 ---
-import { navigation, siteConfig } from '../config/site';
+import { navigation } from '../config/site';
 import TipLink from './TipLink.astro';
-
-const currentYear = new Date().getFullYear();
 ---
 
 <footer class="outer mt-[var(--space-section)] border-t border-border">
-  <div
-    class="inner grid gap-6 py-12 text-center md:grid-cols-2 md:items-center md:text-left"
-  >
-    <div>
-      <a href="/" class="wordmark">{siteConfig.name}</a>
-      <p class="mt-2 text-xs text-muted-foreground">&copy; {currentYear}. All rights reserved.</p>
-      <p class="mt-1 text-xs text-muted-foreground">
+  <div class="inner grid gap-6 py-12 text-center md:grid-cols-3 md:items-center">
+    <div class="md:text-left">
+      <p class="text-xs text-muted-foreground">
         Made in Toronto <span role="img" aria-label="Canadian flag">🇨🇦</span>
       </p>
+    </div>
+
+    <div class="flex justify-center">
+      <TipLink />
     </div>
 
     <nav aria-label="Footer navigation" class="md:justify-self-end">
       <ul class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 md:justify-end">
         {
-          navigation.map((item, index) => (
-            <li class="flex items-center gap-4">
-              {index > 0 && <span class="footer-dot" aria-hidden="true" />}
+          navigation.map((item) => (
+            <li>
               <a href={item.href} class="nav-link">
                 {item.label}
               </a>
             </li>
           ))
         }
-        <li class="flex items-center gap-4">
-          <span class="footer-dot" aria-hidden="true" />
-          <TipLink />
-        </li>
       </ul>
     </nav>
   </div>
 </footer>
-
-<style>
-  .footer-dot {
-    width: 2px;
-    height: 2px;
-    background: var(--border-strong);
-    border-radius: 50%;
-  }
-</style>

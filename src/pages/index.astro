@@ -2,72 +2,310 @@
 import { getCollection } from 'astro:content';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import SkillCard from '../components/SkillCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../config/site';
-import { formatStage, getOrderedStages } from '../lib/stages';
+import { formatStage, skillMeta, STAGE_ORDER } from '../config/skillMeta';
 
-const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order);
-const stages = getOrderedStages(skills);
-const stageCounts = stages.map((stage) => ({
-  name: stage,
-  count: skills.filter((s) => s.data.stage === stage).length,
-}));
+const REPO_URL = 'https://github.com/donutyachts/pmoskills';
+
+const slugifyStage = (stage: string) => stage.toLowerCase().replace(/\s+/g, '-');
+
+const skills = await getCollection('skills');
+
+const rows = skills
+  .filter((skill) => skillMeta[skill.id])
+  .map((skill) => {
+    const meta = skillMeta[skill.id]!;
+    return {
+      id: skill.id,
+      name: skill.data.name,
+      description: skill.data.description,
+      stage: meta.stage,
+      impact: meta.impact,
+      order: meta.order,
+      sourceUrl: `${REPO_URL}/blob/main/${skill.id}.md`,
+    };
+  })
+  .sort((a, b) => a.order - b.order);
+
+const stageGroups = STAGE_ORDER.map((stage) => ({
+  stage,
+  slug: slugifyStage(stage),
+  label: formatStage(stage),
+  rows: rows.filter((row) => row.stage === stage),
+})).filter((group) => group.rows.length > 0);
 ---
 
 <BaseLayout>
   <SiteHeader />
   <main id="content" class="outer">
     <div class="inner">
-      <h1 class="sr-only">{siteConfig.name} — {siteConfig.tagline}</h1>
+      <header class="pagehead">
+        <h1 class="pagehead-title">{siteConfig.name}</h1>
+        <p class="pagehead-description">{siteConfig.about}</p>
+      </header>
 
-      <div class="grid gap-[var(--space-section)] pt-10 md:pt-14 lg:grid-cols-[minmax(0,4fr)_minmax(0,2fr)] lg:gap-12">
-        <section aria-labelledby="more-skills">
-          <h2 id="more-skills" class="section-title">The sequence and the skills</h2>
-
-          <div class="feed">
-            {skills.map((skill) => <SkillCard skill={skill} stages={stages} />)}
-          </div>
-
-          <a href="/skills/" class="btn btn-outline btn-block mt-16">
-            Browse all skills, grouped by stage
-          </a>
-        </section>
-
-        <aside class="sidebar">
-          <section aria-labelledby="about-heading">
-            <h2 id="about-heading" class="section-title">About</h2>
-            <p class="text-lg font-semibold tracking-tight">{siteConfig.name}</p>
-            <p class="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
-              {siteConfig.about}
-            </p>
-          </section>
-
-          <section aria-labelledby="stages-heading">
-            <h2 id="stages-heading" class="section-title">Stages</h2>
-            <ul class="grid gap-4">
-              {
-                stageCounts.map((stage) => (
-                  <li>
-                    <a
-                      href={`/skills/#${stage.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      class="link-title flex items-center justify-between gap-3"
-                    >
-                      <span class="link-title__text text-base font-semibold tracking-tight">
-                        {formatStage(stage.name, stages)}
-                      </span>
-                      <span class="pill shrink-0">
-                        {stage.count} {stage.count === 1 ? 'skill' : 'skills'}
-                      </span>
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </section>
-        </aside>
+      <div class="tabs" role="tablist" aria-label="Skill stages">
+        {
+          stageGroups.map((group, index) => (
+            <button
+              type="button"
+              role="tab"
+              id={`tab-${group.slug}`}
+              aria-controls={`panel-${group.slug}`}
+              aria-selected={index === 0 ? 'true' : 'false'}
+              tabindex={index === 0 ? 0 : -1}
+              class="tab"
+            >
+              {group.label} <span class="tab__count">{group.rows.length}</span>
+            </button>
+          ))
+        }
       </div>
+
+      {
+        stageGroups.map((group, index) => (
+          <div
+            role="tabpanel"
+            id={`panel-${group.slug}`}
+            aria-labelledby={`tab-${group.slug}`}
+            hidden={index !== 0}
+            class="tabpanel"
+          >
+            <div class="table-scroll">
+              <table class="skills-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Skill</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Impact</th>
+                    <th scope="col">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row) => (
+                    <tr>
+                      <td class="skill-name">
+                        <code>{row.name}</code>
+                      </td>
+                      <td class="skill-description">{row.description}</td>
+                      <td>
+                        <span class={`pill pill--impact-${row.impact.toLowerCase()}`}>
+                          {row.impact} time savings
+                        </span>
+                      </td>
+                      <td>
+                        <a
+                          href={row.sourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          class="source-link link-sweep text-sm"
+                        >
+                          <svg
+                            class="source-link__icon"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                          </svg>
+                          View the skills file
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))
+      }
     </div>
   </main>
   <SiteFooter />
+
+  <script is:inline>
+    (() => {
+      const tablist = document.querySelector('[role="tablist"]');
+      if (!tablist) return;
+
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+
+      const activate = (index, focus) => {
+        tabs.forEach((tab, i) => {
+          const selected = i === index;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          if (panels[i]) panels[i].hidden = !selected;
+        });
+        if (focus) tabs[index].focus();
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activate(i, false));
+        tab.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            activate((i + 1) % tabs.length, true);
+          } else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            activate((i - 1 + tabs.length) % tabs.length, true);
+          } else if (event.key === 'Home') {
+            event.preventDefault();
+            activate(0, true);
+          } else if (event.key === 'End') {
+            event.preventDefault();
+            activate(tabs.length - 1, true);
+          }
+        });
+      });
+    })();
+  </script>
 </BaseLayout>
+
+<style>
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    padding: 0.55rem 0.9rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    transition:
+      border-color var(--duration) var(--ease-out),
+      background-color var(--duration) var(--ease-out),
+      color var(--duration) var(--ease-out);
+  }
+
+  .tab:hover {
+    border-color: var(--border-strong);
+    color: var(--foreground);
+  }
+
+  .tab__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    padding: 0.05rem 0.35rem;
+    font-size: 0.6875rem;
+    border-radius: var(--radius-full);
+    background: var(--muted);
+    color: var(--muted-foreground);
+  }
+
+  .tab[aria-selected='true'] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .tab[aria-selected='true'] .tab__count {
+    background: color-mix(in srgb, var(--accent-foreground) 20%, transparent);
+    color: var(--accent-foreground);
+  }
+
+  .tabpanel {
+    margin-top: 2rem;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .skills-table {
+    width: 100%;
+    min-width: 56rem;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .skills-table th,
+  .skills-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skills-table thead th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    background: var(--muted);
+    white-space: nowrap;
+  }
+
+  .skills-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .skills-table tbody tr:hover {
+    background: var(--muted);
+  }
+
+  .skill-name {
+    white-space: nowrap;
+  }
+
+  .skill-name code {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .skill-description {
+    max-width: 30rem;
+    color: var(--muted-foreground);
+    line-height: 1.55;
+  }
+
+  .pill--impact-low {
+    color: var(--muted-foreground);
+  }
+
+  .pill--impact-medium {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    color: var(--accent);
+  }
+
+  .pill--impact-high {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+
+  .source-link__icon {
+    flex-shrink: 0;
+  }
+</style>

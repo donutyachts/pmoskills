@@ -1,6 +1,5 @@
 ---
-import { navigation, siteConfig } from '../config/site';
-import TipLink from './TipLink.astro';
+import { navigation } from '../config/site';
 
 const currentPath = Astro.url.pathname;
 const isCurrentPath = (href: string) =>
@@ -8,9 +7,7 @@ const isCurrentPath = (href: string) =>
 ---
 
 <header class="site-header outer">
-  <div class="inner flex items-center justify-between gap-6 py-2.5">
-    <a href="/" class="wordmark">{siteConfig.name}</a>
-
+  <div class="inner flex items-center justify-end gap-6 py-2.5">
     <div class="flex items-center gap-5">
       <nav class="flex items-center gap-6" aria-label="Primary navigation">
         {
@@ -25,8 +22,6 @@ const isCurrentPath = (href: string) =>
           ))
         }
       </nav>
-
-      <TipLink />
 
       <button
         type="button"
