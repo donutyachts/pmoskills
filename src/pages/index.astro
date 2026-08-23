@@ -162,6 +162,10 @@ const stageGroups = STAGE_ORDER.map((stage) => ({
           }
         });
       });
+
+      const hashId = window.location.hash.slice(1);
+      const hashIndex = tabs.findIndex((tab) => tab.id === hashId);
+      if (hashIndex > 0) activate(hashIndex, false);
     })();
   </script>
 </BaseLayout>
