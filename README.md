@@ -9,7 +9,6 @@ Each skill is a single Markdown file (Claude's Skill format: a description that 
 | File | Stage | Purpose |
 |---|---|---|
 | `pmo-project-overview.md` | Intake | Turn notes from the PM's initial one-on-one with the project sponsor into a structured project overview + team roster, published as a Notion subpage. |
-| `pmo-kickoff-overview.md` | Intake | Same as above, but sourced from a kickoff meeting with the project requestor rather than a 1:1. |
 | `pmo-project-registry.md` | Intake | Locate and validate a project's four data repositories (Notion project node, Steps database, Project Workbook database, Slack channel) and record them on the project node page. |
 | `pmo-team-member-intake.md` | Team onboarding | Turn a PM's 1:1 notes with a contributing team member into a structured capture of commitments and needs, written to Notion, flagging conflicts against the Project Overview. |
 | `pmo-step-schedule.md` | Scheduling prep | Prep the Steps database ahead of team 1:1s by carrying forward applicable steps/learnings from similar past projects; later keeps the schedule current from weekly Slack sync notes. |
@@ -22,7 +21,7 @@ Each skill is a single Markdown file (Claude's Skill format: a description that 
 ## Sequence
 
 ```
-pmo-project-overview / pmo-kickoff-overview
+pmo-project-overview
         │
         ▼
 pmo-project-registry ──► pmo-team-member-intake ──► pmo-step-schedule (prep)
