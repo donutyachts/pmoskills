@@ -1,4 +1,4 @@
-# pmo-agent-skills
+# PMO Skills
 
 Claude Agent Skills encoding the HostPapa PMO's project-management methodology — from project intake through planning, scheduling, meeting recaps, and Notion/Slack sync.
 
