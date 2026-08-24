@@ -5,11 +5,16 @@ import { comingSoon, siteConfig } from '../config/site';
 
 interface Props {
   title?: string;
+  titleOverride?: string;
   description?: string;
 }
 
-const { title = siteConfig.name, description = siteConfig.description } = Astro.props;
-const pageTitle = title === siteConfig.name ? title : `${title} · ${siteConfig.name}`;
+const {
+  title = siteConfig.name,
+  titleOverride,
+  description = siteConfig.description,
+} = Astro.props;
+const pageTitle = titleOverride ?? (title === siteConfig.name ? title : `${title} · ${siteConfig.name}`);
 ---
 
 <!doctype html>
