@@ -17,6 +17,7 @@ Each skill is a single Markdown file (Claude's Skill format: a description that 
 | `pmo-planning-synthesis.md` | Planning | Turn planning-session transcripts into a documented strategy and plan (WBS) against the Steps database, write confirmed team deliverables as step rows, and propose milestones. |
 | `pmo-meeting-recap.md` | Cadence | Reconcile a PM's own meeting notes against Gemini/AI notes and the transcript into a strict-format recap, then post it to the project's Slack channel after approval. |
 | `pmo-slack-notion-sync.md` | Cadence | Pull decisions, changes, risks, dependencies, and action items out of a Slack recap and add them as categorized rows in the Project Workbook, deduped against existing entries. |
+| `pmo-link-harvest.md` | Cadence | Scan a whole Slack channel over a date range for document links (Docs/Sheets, Notion, Jira, sites) never logged in the Project Workbook, and add each as a row, deduped against existing URLs. |
 
 ## Sequence
 
@@ -31,7 +32,11 @@ pmo-project-registry ──► pmo-team-member-intake ──► pmo-step-schedul
                                                           │
                                                           ▼
                                         pmo-meeting-recap ──► pmo-slack-notion-sync
-                                              (repeats weekly)
+                                              (repeats weekly)      │
+                                                                    ▼
+                                                            pmo-link-harvest
+                                                    (periodic channel sweep, independent
+                                                       of any single recap message)
 ```
 
 ## Status
